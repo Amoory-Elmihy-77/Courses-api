@@ -4,6 +4,8 @@ import "dotenv/config";
 import cors from "cors";
 import userRouter from "./routes/users.route.js";
 import { httpStatus } from "./utils/httpStatusText.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -18,6 +20,10 @@ app.use(express.json());
 app.use(cors());
 
 //////////////////
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use("/api/users", userRouter);
 
 //////////////////

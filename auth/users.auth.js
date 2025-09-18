@@ -46,7 +46,8 @@ export const register = asyncWrapper(async (req, res, next) => {
     lastName,
     email,
     password: hashedPassword,
-    role: role.toUpperCase(),
+    role: role ? role.toUpperCase() : undefined,
+    avatar: req.file ? req.file.filename : undefined,
   });
   await newUser.save();
   return res
