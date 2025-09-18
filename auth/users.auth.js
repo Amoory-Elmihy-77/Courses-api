@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { httpStatus } from "../utils/httpStatusText.js";
 import User from "../models/user.model.js";
 import appError from "../utils/appError.js";
+import { generateToken } from "../utils/genrateToken.js";
 
 export const login = asyncWrapper(async (req, res, next) => {
   const { email, password } = req.body;
@@ -19,7 +20,16 @@ export const login = asyncWrapper(async (req, res, next) => {
     return next(appError.create(404, httpStatus.FAIL, "user not found"));
   const checkPassword = await bcrypt.compare(password, user.password);
   if (checkPassword) {
-    return res.status(200).json({ msg: "login successfully" });
+    const token = generateToken({
+      email: user.email,
+      role: user.role,
+      id: user._id,
+    });
+    return res.status(200).json({
+      status: httpStatus.SUCCESS,
+      message: "user login successfully",
+      data: { token },
+    });
   } else {
     return next(
       appError.create(400, httpStatus.ERROR, "wrong email or password")
