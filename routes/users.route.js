@@ -3,6 +3,8 @@ import { getAllUser } from "../controllers/users.controller.js";
 import { register, login } from "../auth/users.auth.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import multer from "multer";
+import { userRole } from "../utils/userRole.js";
+import { allowedTo } from "../middlewares/allowedTo.js";
 
 const disStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -28,7 +30,9 @@ const upload = multer({ storage: disStorage, fileFilter });
 
 const router = express.Router();
 
-router.route("/").get(verifyToken, getAllUser);
+router
+  .route("/")
+  .get(verifyToken, allowedTo(userRole.ADMIN, userRole.MANAGER), getAllUser);
 router.route("/register").post(upload.single("avatar"), register);
 router.route("/login").post(login);
 
